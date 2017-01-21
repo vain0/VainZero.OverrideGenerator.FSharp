@@ -1,4 +1,4 @@
-﻿namespace VainZero
+﻿namespace VainZero.IO
 
 open System
 open System.IO
@@ -31,6 +31,10 @@ type StructuralTextWriter(writer: TextWriter, indentWidth: int) =
     async {
       let indent = createIndent ()
       for line in text |> Str.splitBy Environment.NewLine do
-        do! writer.WriteAsync(indent) |> Async.AwaitTask
-        do! writer.WriteLineAsync(line) |> Async.AwaitTask
+        match line with
+        | null | "" ->
+          do! writer.WriteLineAsync("") |> Async.AwaitTask
+        | line ->
+          do! writer.WriteAsync(indent) |> Async.AwaitTask
+          do! writer.WriteLineAsync(line) |> Async.AwaitTask
     }

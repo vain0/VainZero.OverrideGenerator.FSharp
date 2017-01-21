@@ -11,6 +11,8 @@ type AppParameter =
   | [<AltCommandLine("-r")>]
     Reference
     of string
+  | ReceiverIdentifier
+    of string
   | IndentWidth
     of int
   | Stub
@@ -23,8 +25,10 @@ with
         "Specify the base type to inherit from. Can include type arguments like IEnumerable<T>; they're not validated."
       | Reference _ ->
         "Add a reference to a class library."
+      | ReceiverIdentifier _ ->
+        "Specify the identifier to bind the receiver. `this` by default."
       | IndentWidth _ ->
-        "Specify the width of an indent. 4 by default."
+        "Specify the width of an indent. 2 by default."
       | Stub _ ->
         "Specify the stub definition. By default, an expresssion to raise an exception."
 
@@ -34,6 +38,8 @@ type AppArgument =
       string
     References:
       list<string>
+    ReceiverIdentifier:
+      string
     IndentWidth:
       int
     Stub:
@@ -53,8 +59,10 @@ module AppArgument =
           result.GetResult(<@ Type @>)
         References =
           result.GetResults(<@ Reference @>)
+        ReceiverIdentifier =
+          result.GetResult(<@ ReceiverIdentifier @>, "this")
         IndentWidth =
-          result.GetResult(<@ IndentWidth @>, 4)
+          result.GetResult(<@ IndentWidth @>, 2)
         Stub =
           result.GetResult(<@ Stub @>, "System.NotImplementedException() |> raise")
       }

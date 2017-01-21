@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="TypeParserTest.fs" />
+    <Compile Include="OverrideWriterTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VainZero.OverrideGenerator.FSharp\VainZero.OverrideGenerator.FSharp.fsproj">

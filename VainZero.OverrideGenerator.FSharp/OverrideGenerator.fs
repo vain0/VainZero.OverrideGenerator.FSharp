@@ -4,7 +4,7 @@ open System
 open System.IO
 open System.Reflection
 open Basis.Core
-open VainZero
+open VainZero.IO
 
 module OverrideGeneratorModule =
   type Error =
@@ -24,6 +24,14 @@ module OverrideGeneratorModule =
       propertyInfo.GetMethod |> isAbstract || propertyInfo.SetMethod |> isAbstract
     | _ ->
       false
+
+  let isNotSpecialMethod (memberInfo: MemberInfo) =
+    match memberInfo.MemberType with
+    | MemberTypes.Method ->
+      let methodInfo = memberInfo :?> MethodInfo
+      methodInfo.IsSpecialName |> not
+    | _ ->
+      true
 
 open OverrideGeneratorModule
 
@@ -94,8 +102,11 @@ type OverrideGenerator() =
 
   let tryGenerate (writer: OverrideWriter) typeName choose =
     result {
-      let! typ = selectType choose typeName
-      return writer.WriteAsync(typ, typeName, isAbstract)
+      let! typ =
+        selectType choose typeName
+      let writes memberInfo =
+        isAbstract memberInfo && isNotSpecialMethod memberInfo
+      return writer.WriteAsync(typ, typeName, writes)
     }
 
   let dispose () =

@@ -3,7 +3,7 @@
 open System
 open System.IO
 open Basis.Core
-open VainZero
+open VainZero.IO
 open VainZero.OverrideGenerator.FSharp
 
 type Error =
@@ -32,7 +32,7 @@ module Program =
       let structuralWriter =
         StructuralTextWriter(Console.Out, argument.IndentWidth)
       let overrideWriter =
-        OverrideWriter(structuralWriter, argument.Stub)
+        OverrideWriter(structuralWriter, argument.ReceiverIdentifier, argument.Stub)
       let! write =
         generator.GenerateOrError(overrideWriter, argument.Type, choose)
         |> Result.mapFailure OverrideGeneratorError
