@@ -5,6 +5,7 @@ open System.IO
 open System.Reflection
 open Basis.Core
 open VainZero.IO
+open VainZero.Reflection
 
 [<Sealed>]
 type OverrideWriter(writer: StructuralTextWriter, receiver, stub) =
@@ -101,39 +102,41 @@ type OverrideWriter(writer: StructuralTextWriter, receiver, stub) =
         return! writeMembers members
     }
 
-  let writeClass writes arguments (typ: Type) =
+  let writeInterfaceAll writes arguments (typ: Type) =
     async {
-      match typ.GetMembers() |> Array.filter writes with
-      | [||] ->
-        ()
-      | members ->
-        return! writeMembers members
+      let interfaces = Array.append (typ.GetInterfaces()) [| typ |] |> Seq.indexed
+      let map =
+        typ.GetGenericArguments()
+        |> Seq.zip arguments
+        |> Seq.map (fun (name, t) -> (t.Name, name))
+        |> Map.ofSeq
+      let rec typeName (t: Type) =
+        if t.IsGenericParameter then
+          map |> Map.tryFind t.Name |> Option.getOr "_"
+        else if t.IsGenericType || t.IsGenericTypeDefinition then
+          let parameters =
+            t.GetGenericArguments() |> Seq.map typeName |> String.concat ", "
+          sprintf "%s<%s>" (t |> Type.rawName) parameters
+        else
+          t.Name
+      for (i, superType) in interfaces do
+        if i > 0 then
+          do! writer.WriteLineAsync("")
+        do! writeInterface writes (superType |> typeName) superType
     }
 
+  let writeClass writes arguments (typ: Type) =
+    match typ.GetMembers() |> Array.filter writes with
+    | [||] ->
+      async { () }
+    | members ->
+      writeMembers members
+
   let write (writes: MemberInfo -> bool) arguments (typ: Type) =
-    async {
-      if typ.IsInterface then
-        for (i, type') in typ.GetInterfaces() |> Array.append [| typ |] |> Seq.indexed do
-          if i > 0 then
-            do! writer.WriteLineAsync("")
-          if type'.IsGenericTypeDefinition then
-            let map =
-              typ.GetGenericArguments()
-              |> Seq.zip arguments
-              |> Seq.map (fun (name, t) -> (t.Name, name))
-              |> Map.ofSeq
-            let parameterList =
-              type'.GetGenericArguments()
-              |> Seq.map (fun t -> map |> Map.tryFind t.Name |> Option.getOr "_")
-              |> String.concat ", "
-            let typeName =
-              sprintf "%s<%s>" (type'.Name |> Str.takeWhile ((<>) '`')) parameterList
-            do! writeInterface writes typeName type'
-          else
-            do! writeInterface writes type'.Name type'
-      else
-        return! writeClass writes arguments typ
-    }
+    if typ.IsInterface then
+      writeInterfaceAll writes arguments typ
+    else
+      writeClass writes arguments typ
 
   member this.WriteAsync(typ, arguments, writes) =
     write writes arguments typ

@@ -48,7 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="StructuralTextWriter.fs" />
+    <Compile Include="Reflection.fs" />
+    <Compile Include="IO.StructuralTextWriter.fs" />
     <Compile Include="TypeQueryParser.fs" />
     <Compile Include="TypeSearcher.fs" />
     <Compile Include="OverrideWriter.fs" />

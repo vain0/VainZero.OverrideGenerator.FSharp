@@ -1,6 +1,7 @@
 ﻿namespace VainZero.OverrideGenerator.FSharp.UnitTest
 
 open System
+open System.Collections.Generic
 open System.IO
 open System.Text
 open Persimmon
@@ -40,6 +41,26 @@ module OverrideWriterTest =
 
   type IGeneric2<'x, 'y> =
     abstract F: 'x -> 'y
+
+  type INongenericBase =
+    abstract F: unit -> unit
+
+  type IBase<'x> =
+    abstract X: 'x
+
+  type IDerived<'x, 'y> =
+    inherit INongenericBase
+    inherit IBase<KeyValuePair<'x, 'y>>
+
+  type IRoot<'x> =
+    interface
+    end
+
+  type INode<'x> =
+    inherit IRoot<IEnumerator<'x>>
+
+  type ILeafNode<'x> =
+    inherit INode<IEnumerable<'x>>
 
   let receiver = "self"
   let stub = "todo ()"
@@ -146,6 +167,30 @@ module OverrideWriterTest =
         , """interface IGeneric2<'x, 'y> with
     override self.F(arg1) =
         todo ()
+"""
+        )
+      case
+        ( typedefof<IDerived<_, _>>
+        , [|"'x"; "'y"|]
+        , """interface IBase<KeyValuePair<'x, 'y>> with
+    override self.X =
+        todo ()
+
+interface INongenericBase with
+    override self.F() =
+        todo ()
+
+interface IDerived<'x, 'y>
+"""
+        )
+      case
+        ( typedefof<ILeafNode<_>>
+        , [|"int"|]
+        , """interface INode<IEnumerable<int>>
+
+interface IRoot<IEnumerator<IEnumerable<int>>>
+
+interface ILeafNode<int>
 """
         )
       run body

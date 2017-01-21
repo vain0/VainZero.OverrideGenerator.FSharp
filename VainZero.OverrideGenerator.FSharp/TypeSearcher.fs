@@ -3,6 +3,7 @@
 open System
 open System.Reflection
 open Basis.Core
+open VainZero.Reflection
 
 module TypeSearcherModule =
   type Error =
@@ -10,13 +11,9 @@ module TypeSearcherModule =
       of string * exn
 
   let matches (result: TypeQueryParser.Result) (typ: Type) =
-    let name = typ.Name |> Str.takeWhile ((<>) '`')
+    let name = typ |> Type.rawName
     if name = result.Name then
-      let typeParameterCount =
-        if typ.IsGenericTypeDefinition
-        then typ.GetGenericArguments().Length
-        else 0
-      typeParameterCount = result.TypeParameters.Length
+      typ.GetGenericArguments().Length = result.TypeParameters.Length
     else
       false
 
