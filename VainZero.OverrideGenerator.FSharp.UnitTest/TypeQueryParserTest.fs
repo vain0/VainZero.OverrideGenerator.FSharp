@@ -1,14 +1,15 @@
 ﻿namespace VainZero.OverrideGenerator.FSharp.UnitTest
 
+open Basis.Core
 open Persimmon
 open Persimmon.Syntax.UseTestNameByReflection
 open VainZero.OverrideGenerator.FSharp
 
-module TypeParserTest =
+module TypeQueryParserTest =
   let ``test parse`` =
     let body (input, path, name, arguments) =
       test {
-        let actual = input |> TypeParser.parse
+        let actual = input |> TypeQueryParser.tryParse |> Result.get
         do! actual.Path |> assertEquals path
         do! actual.Name |> assertEquals name
         do! actual.TypeArguments |> assertEquals arguments

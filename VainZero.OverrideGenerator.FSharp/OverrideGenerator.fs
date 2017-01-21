@@ -8,9 +8,9 @@ open VainZero.IO
 
 module OverrideGeneratorModule =
   type Error =
+    | TypeSearcherError
+      of TypeSearcherModule.Error
     | NoMatchingType
-    | FailedLoad
-      of string * exn
 
   let isAbstract (memberInfo: MemberInfo) =
     match memberInfo.MemberType with
@@ -35,95 +35,21 @@ module OverrideGeneratorModule =
 
 open OverrideGeneratorModule
 
-type OverrideGenerator() =
-  let appDomain =
-    AppDomain.CreateDomain("VainZero.OverrideGenerator.FSharp")
+type OverrideGenerator(searcher: TypeSearcher) =
+  let writes memberInfo =
+    isAbstract memberInfo && isNotSpecialMethod memberInfo
 
-  let explicitlyLoadedAssemblies =
-    ResizeArray<_>()
-
-  let assemblies () =
-    seq {
-      yield! explicitlyLoadedAssemblies
-      yield! appDomain.GetAssemblies()
-    }
-
-  let tryLoad (path: string) =
+  let tryGenerate (writer: OverrideWriter) query =
     result {
-      let! assemblyName =
-        try
-          AssemblyName.GetAssemblyName(path) |> Success
-        with
-        | e ->
-          FailedLoad (path, e) |> Failure
-      let! assembly =
-        try
-          appDomain.Load(assemblyName) |> Success
-        with
-        | e ->
-          FailedLoad (path, e) |> Failure
-      explicitlyLoadedAssemblies.Add(assembly)
-      return ()
-    }
-
-  let tryLoadMany paths =
-    paths |> Seq.fold
-      (fun result path ->
-        match result with
-        | Success () ->
-          tryLoad path
-        | Failure error ->
-          error |> Failure
-      ) (Success ())
-
-  let selectType choose (typeName: string) =
-    let result =
-      typeName |> TypeParser.parse
-    let types =
-      assemblies ()
-      |> Seq.collect (fun a -> a.GetTypes())
-      |> Seq.filter
-        (fun typ ->
-          typ.Name = result.Name
-          && typ.GenericTypeArguments.Length = result.TypeArguments.Length
-        )
-      |> Seq.toArray
-    match types with
-    | [||] ->
-      NoMatchingType |> Failure
-    | [|typ|] ->
-      typ |> Success
-    | types ->
-      match types |> choose with
+      let! types =
+        searcher.FindOrError(query)
+        |> Result.mapFailure TypeSearcherError
+      match types |> Seq.tryHead with
       | Some typ ->
-        typ |> Success
+        return writer.WriteAsync(typ, query, writes)
       | None ->
-        NoMatchingType |> Failure
-
-  let tryGenerate (writer: OverrideWriter) typeName choose =
-    result {
-      let! typ =
-        selectType choose typeName
-      let writes memberInfo =
-        isAbstract memberInfo && isNotSpecialMethod memberInfo
-      return writer.WriteAsync(typ, typeName, writes)
+        return! Failure NoMatchingType
     }
 
-  let dispose () =
-    AppDomain.Unload(appDomain)
-
-  member this.LoadOrError(path) =
-    tryLoad path
-
-  member this.LoadOrError(paths) =
-    tryLoadMany paths
-
-  member this.GenerateOrError(writer, typeName, choose) =
-    tryGenerate writer typeName choose
-
-  member this.Dispose() =
-    dispose ()
-
-  interface IDisposable with
-    override this.Dispose() =
-      this.Dispose()
+  member this.GenerateOrError(writer, typeName) =
+    tryGenerate writer typeName
