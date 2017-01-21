@@ -14,7 +14,7 @@ module TypeSearcherTest =
     let body (query, expected) =
       test {
         use searcher = new TypeSearcher()
-        let query = query |> TypeQueryParser.tryParse |> Result.get
+        let query = query |> TypeExpressionParser.tryParse |> Result.get
         match searcher.FindOrError(query) with
         | Success actual ->
           do! actual |> Seq.toArray |> assertEquals expected
@@ -33,6 +33,10 @@ module TypeSearcherTest =
       case
         ( "IDictionary<T, U>"
         , [| typedefof<System.Collections.Generic.IDictionary<_, _>> |]
+        )
+      case
+        ( "Collections.IEnumerable"
+        , [| typeof<System.Collections.IEnumerable> |]
         )
       run body
     }

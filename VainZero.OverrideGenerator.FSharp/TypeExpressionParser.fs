@@ -28,7 +28,7 @@ with
         (arguments |> Array.map string |> String.concat ", ")
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module TypeQueryParser =
+module TypeExpressionParser =
   type Error =
     string
 

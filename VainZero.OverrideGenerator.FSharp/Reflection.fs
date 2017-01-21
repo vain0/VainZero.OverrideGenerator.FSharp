@@ -13,7 +13,7 @@ module Type =
     else
       typ.Name
 
-  let parseQualifiedName (rawName: string) (fullName: string) =
+  let parseQualifiedName (fullName: string) =
     let namespaces =
       fullName.Split('.')
     let qualifiedClassName =
@@ -24,8 +24,8 @@ module Type =
       qualifiedClassName.Split('+')
     let classes =
       classes.[0..(classes.Length - 2)]
-    (namespaces, classes, rawName)
+    (namespaces, classes)
 
-  /// N1.N2.C1+C2+C3`1 -> ([|"N1"; "N2"|], [|"C1"; "C2"|], "C3")
+  /// N1.N2.C1+C2+C3`1 -> ([|"N1"; "N2"|], [|"C1"; "C2"|])
   let qualifier (typ: Type) =
-    parseQualifiedName (typ |> rawName) typ.FullName
+    parseQualifiedName typ.FullName

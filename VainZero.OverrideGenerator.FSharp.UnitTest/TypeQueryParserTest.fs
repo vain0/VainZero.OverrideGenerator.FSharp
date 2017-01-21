@@ -9,7 +9,7 @@ module TypeQueryParserTest =
   let ``test tryParse success`` =
     let body (input, qualifier, name, arguments) =
       test {
-        let actual = input |> TypeQueryParser.tryParse |> Result.get
+        let actual = input |> TypeExpressionParser.tryParse |> Result.get
         do! actual.Qualifier |> assertEquals qualifier
         do! actual.Name |> assertEquals name
         do! actual.Arguments |> Array.map string |> assertEquals arguments

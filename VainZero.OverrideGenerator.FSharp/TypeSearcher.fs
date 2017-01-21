@@ -3,6 +3,7 @@
 open System
 open System.Reflection
 open Basis.Core
+open VainZero.Collections
 open VainZero.Reflection
 
 module TypeSearcherModule =
@@ -12,8 +13,13 @@ module TypeSearcherModule =
 
   let matches (typeExpression: TypeExpression) (typ: Type) =
     let name = typ |> Type.rawName
-    if name = typeExpression.Name then
-      typ.GetGenericArguments().Length = typeExpression.Arguments.Length
+    if
+      name = typeExpression.Name
+      && typ.GetGenericArguments().Length = typeExpression.Arguments.Length
+    then
+      let (namespaces, classes) = Type.qualifier typ
+      let path = Array.append namespaces classes
+      path |> Array.endsWith typeExpression.Qualifier
     else
       false
 
