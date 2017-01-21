@@ -10,7 +10,7 @@ module OverrideGeneratorModule =
   type Error =
     | NoMatchingType
     | FailedLoad
-      of exn
+      of string * exn
 
   let isAbstract (memberInfo: MemberInfo) =
     match memberInfo.MemberType with
@@ -47,16 +47,26 @@ type OverrideGenerator() =
           AssemblyName.GetAssemblyName(path) |> Success
         with
         | e ->
-          FailedLoad e |> Failure
+          FailedLoad (path, e) |> Failure
       let! assembly =
         try
           appDomain.Load(assemblyName) |> Success
         with
         | e ->
-          FailedLoad e |> Failure
+          FailedLoad (path, e) |> Failure
       explicitlyLoadedAssemblies.Add(assembly)
       return ()
     }
+
+  let tryLoadMany paths =
+    paths |> Seq.fold
+      (fun result path ->
+        match result with
+        | Success () ->
+          tryLoad path
+        | Failure error ->
+          error |> Failure
+      ) (Success ())
 
   let selectType choose (typeName: string) =
     let result =
@@ -82,9 +92,8 @@ type OverrideGenerator() =
       | None ->
         NoMatchingType |> Failure
 
-  let tryGenerate textWriter typeName choose =
+  let tryGenerate (writer: OverrideWriter) typeName choose =
     result {
-      let writer = OverrideWriter(textWriter)
       let! typ = selectType choose typeName
       return writer.WriteAsync(typ, typeName, isAbstract)
     }
@@ -95,8 +104,11 @@ type OverrideGenerator() =
   member this.LoadOrError(path) =
     tryLoad path
 
-  member this.GenerateOrError(textWriter, typeName, choose) =
-    tryGenerate textWriter typeName choose
+  member this.LoadOrError(paths) =
+    tryLoadMany paths
+
+  member this.GenerateOrError(writer, typeName, choose) =
+    tryGenerate writer typeName choose
 
   member this.Dispose() =
     dispose ()

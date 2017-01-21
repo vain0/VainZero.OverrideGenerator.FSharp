@@ -6,12 +6,9 @@ open System.Reflection
 open VainZero
 
 [<Sealed>]
-type OverrideWriter(textWriter: TextWriter) =
-  let writer =
-    StructuralTextWriter(textWriter)
-
+type OverrideWriter(writer: StructuralTextWriter, stub) =
   let writeStub () =
-    writer.WriteLineAsync("System.NotImplementedException() |> raise")
+    writer.WriteLineAsync(stub)
 
   let writeProperty (propertyInfo: PropertyInfo) =
     async {

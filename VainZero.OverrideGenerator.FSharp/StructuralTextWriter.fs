@@ -5,11 +5,11 @@ open System.IO
 open Basis.Core
 
 [<Sealed>]
-type StructuralTextWriter(writer: TextWriter) =
+type StructuralTextWriter(writer: TextWriter, indentWidth: int) =
   let indent = ref 0
 
   let indentLength () =
-    !indent * 2
+    !indent * indentWidth
 
   let createIndent () =
     String.replicate (indentLength ()) " "
