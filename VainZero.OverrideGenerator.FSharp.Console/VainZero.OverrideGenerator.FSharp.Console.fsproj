@@ -5,14 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>3fedfc2c-5e24-48f9-823a-8898fade0e41</ProjectGuid>
+    <ProjectGuid>e7f7f32a-58ab-4be5-90ff-702bb96a502c</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>VainZero.OverrideGenerator.FSharp</RootNamespace>
-    <AssemblyName>VainZero.OverrideGenerator.FSharp</AssemblyName>
+    <RootNamespace>VainZero.OverrideGenerator.FSharp.Console</RootNamespace>
+    <AssemblyName>VainZero.OverrideGenerator.FSharp.Console</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
-    <Name>VainZero.OverrideGenerator.FSharp</Name>
+    <Name>VainZero.OverrideGenerator.FSharp.Console</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\VainZero.OverrideGenerator.FSharp.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\VainZero.OverrideGenerator.FSharp.Console.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -34,7 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\VainZero.OverrideGenerator.FSharp.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\VainZero.OverrideGenerator.FSharp.Console.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
@@ -48,16 +48,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Collections.fs" />
-    <Compile Include="Reflection.fs" />
-    <Compile Include="IO.StructuralTextWriter.fs" />
-    <Compile Include="TypeExpressionParser.fs" />
-    <Compile Include="TypeSearcher.fs" />
-    <Compile Include="OverrideWriter.fs" />
-    <Compile Include="OverrideGenerator.fs" />
     <Compile Include="AppArgument.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VainZero.OverrideGenerator.FSharp.Core\VainZero.OverrideGenerator.FSharp.Core.fsproj">
+      <Name>VainZero.OverrideGenerator.FSharp.Core</Name>
+      <Project>{04a6690b-8562-426d-9976-4703284aa535}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\VainZero.OverrideGenerator.FSharp.Utility\VainZero.OverrideGenerator.FSharp.Utility.fsproj">
+      <Name>VainZero.OverrideGenerator.FSharp.Utility</Name>
+      <Project>{a3906dff-a0d5-44cb-b4ff-1fa5f28eb450}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

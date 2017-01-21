@@ -2,7 +2,6 @@
 
 open System
 open System.IO
-open Basis.Core
 
 [<Sealed>]
 type StructuralTextWriter(writer: TextWriter, indentWidth: int) =
@@ -27,10 +26,10 @@ type StructuralTextWriter(writer: TextWriter, indentWidth: int) =
           indent |> decr
     }
 
-  member this.WriteLineAsync(text) =
+  member this.WriteLineAsync(text: string) =
     async {
       let indent = createIndent ()
-      for line in text |> Str.splitBy Environment.NewLine do
+      for line in text.Split([|Environment.NewLine|], StringSplitOptions.None) do
         match line with
         | null | "" ->
           do! writer.WriteLineAsync("") |> Async.AwaitTask

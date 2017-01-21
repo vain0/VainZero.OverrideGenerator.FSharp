@@ -1,4 +1,4 @@
-﻿namespace VainZero.OverrideGenerator.FSharp.UnitTest.AssemblyInfo
+﻿namespace VainZero.OverrideGenerator.FSharp.Console.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -7,11 +7,11 @@ open System.Runtime.InteropServices
 // アセンブリに関する一般情報は、以下の属性セットによって
 // 制御されます。アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更します。
-[<assembly: AssemblyTitle("VainZero.OverrideGenerator.FSharp.UnitTest")>]
+[<assembly: AssemblyTitle("VainZero.OverrideGenerator.FSharp.Console")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]
-[<assembly: AssemblyProduct("VainZero.OverrideGenerator.FSharp.UnitTest")>]
+[<assembly: AssemblyProduct("VainZero.OverrideGenerator.FSharp.Console")>]
 [<assembly: AssemblyCopyright("Copyright ©  2017")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
@@ -22,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // このプロジェクトが COM に公開される場合、次の GUID がタイプ ライブラリの ID になります
-[<assembly: Guid("f678b979-50dc-4474-8a96-a64788b3dee4")>]
+[<assembly: Guid("e7f7f32a-58ab-4be5-90ff-702bb96a502c")>]
 
 // アセンブリのバージョン情報は、以下の 4 つの値で構成されます。:
 // 
