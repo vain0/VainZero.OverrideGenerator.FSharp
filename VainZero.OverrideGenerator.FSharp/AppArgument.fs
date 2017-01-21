@@ -22,9 +22,9 @@ with
     override this.Usage =
       match this with
       | Type _ ->
-        "Specify the base type to inherit from. Can include type arguments like IEnumerable<T>; they're not validated."
+        "Specify the base type to inherit from. Can include type arguments (e.g. IEnumerable<T>)."
       | Reference _ ->
-        "Add a reference to a class library."
+        "Add a reference to an assembly."
       | ReceiverIdentifier _ ->
         "Specify the identifier to bind the receiver. `this` by default."
       | IndentWidth _ ->
