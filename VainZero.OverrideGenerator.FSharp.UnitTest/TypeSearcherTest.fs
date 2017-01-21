@@ -14,6 +14,7 @@ module TypeSearcherTest =
     let body (query, expected) =
       test {
         use searcher = new TypeSearcher()
+        let query = query |> TypeQueryParser.tryParse |> Result.get
         match searcher.FindOrError(query) with
         | Success actual ->
           do! actual |> Seq.toArray |> assertEquals expected

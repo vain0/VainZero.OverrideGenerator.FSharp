@@ -3,6 +3,7 @@
 open System
 open System.IO
 open System.Reflection
+open Basis.Core
 open VainZero.IO
 
 [<Sealed>]
@@ -84,7 +85,12 @@ type OverrideWriter(writer: StructuralTextWriter, receiver, stub) =
         do! writeMember mem
     }
 
-  let writeInterface writes (typ: Type) typeName =
+  let typeName arguments (typ: Type) =
+    if typ.IsGenericTypeDefinition
+    then sprintf "%s<%s>" typ.Name (arguments |> String.concat ", ")
+    else typ.Name
+
+  let writeInterface writes typeName (typ: Type) =
     async {
       match typ.GetMembers() |> Array.filter writes with
       | [||] ->
@@ -95,7 +101,7 @@ type OverrideWriter(writer: StructuralTextWriter, receiver, stub) =
         return! writeMembers members
     }
 
-  let writeClass writes (typ: Type) typeName =
+  let writeClass writes arguments (typ: Type) =
     async {
       match typ.GetMembers() |> Array.filter writes with
       | [||] ->
@@ -104,22 +110,39 @@ type OverrideWriter(writer: StructuralTextWriter, receiver, stub) =
         return! writeMembers members
     }
 
-  let write (typ: Type) (typeName: string) (writes: MemberInfo -> bool) =
+  let write (writes: MemberInfo -> bool) arguments (typ: Type) =
     async {
       if typ.IsInterface then
-        return! writeInterface writes typ typeName
+        for (i, type') in typ.GetInterfaces() |> Array.append [| typ |] |> Seq.indexed do
+          if i > 0 then
+            do! writer.WriteLineAsync("")
+          if type'.IsGenericTypeDefinition then
+            let map =
+              typ.GetGenericArguments()
+              |> Seq.zip arguments
+              |> Seq.map (fun (name, t) -> (t.Name, name))
+              |> Map.ofSeq
+            let parameterList =
+              type'.GetGenericArguments()
+              |> Seq.map (fun t -> map |> Map.tryFind t.Name |> Option.getOr "_")
+              |> String.concat ", "
+            let typeName =
+              sprintf "%s<%s>" (type'.Name |> Str.takeWhile ((<>) '`')) parameterList
+            do! writeInterface writes typeName type'
+          else
+            do! writeInterface writes type'.Name type'
       else
-        return! writeClass writes typ typeName
+        return! writeClass writes arguments typ
     }
 
-  member this.WriteAsync(typ, typeName, writes) =
-    write typ typeName writes
+  member this.WriteAsync(typ, arguments, writes) =
+    write writes arguments typ
 
-  member this.Write(typ, typeName, writes) =
-    this.WriteAsync(typ, typeName, writes) |> Async.RunSynchronously
+  member this.Write(typ, arguments, writes) =
+    this.WriteAsync(typ, arguments, writes) |> Async.RunSynchronously
 
-  member this.Write(typ, typeName) =
-    this.Write(typ, typeName, (fun _ -> true))
+  member this.Write(typ, arguments) =
+    this.Write(typ, arguments, (fun _ -> true))
 
   member this.Write(typ: Type) =
-    this.Write(typ, typ.Name)
+    this.Write(typ, [||])

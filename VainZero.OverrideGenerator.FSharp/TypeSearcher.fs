@@ -6,8 +6,6 @@ open Basis.Core
 
 module TypeSearcherModule =
   type Error =
-    | QueryParseError
-      of TypeQueryParser.Error
     | AssemblyLoadError
       of string * exn
 
@@ -65,15 +63,12 @@ type TypeSearcher() =
           error |> Failure
       ) (Success ())
 
-  let tryFind (typeName: string): Result<_, Error> =
+  let tryFind (query: TypeQueryParser.Result): Result<_, Error> =
     result {
-      let! result =
-        typeName |> TypeQueryParser.tryParse
-        |> Result.mapFailure QueryParseError
       return
         assemblies ()
         |> Seq.collect (fun a -> a.GetTypes())
-        |> Seq.filter (matches result)
+        |> Seq.filter (matches query)
     }
 
   let dispose () =

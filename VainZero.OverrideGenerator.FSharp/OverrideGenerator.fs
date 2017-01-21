@@ -8,6 +8,8 @@ open VainZero.IO
 
 module OverrideGeneratorModule =
   type Error =
+    | TypeQueryParseError
+      of TypeQueryParser.Error
     | TypeSearcherError
       of TypeSearcherModule.Error
     | NoMatchingType
@@ -41,12 +43,15 @@ type OverrideGenerator(searcher: TypeSearcher) =
 
   let tryGenerate (writer: OverrideWriter) query =
     result {
+      let! query =
+        query |> TypeQueryParser.tryParse
+        |> Result.mapFailure TypeQueryParseError
       let! types =
         searcher.FindOrError(query)
         |> Result.mapFailure TypeSearcherError
       match types |> Seq.tryHead with
       | Some typ ->
-        return writer.WriteAsync(typ, query, writes)
+        return writer.WriteAsync(typ, query.TypeParameters, writes)
       | None ->
         return! Failure NoMatchingType
     }

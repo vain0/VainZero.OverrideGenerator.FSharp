@@ -47,13 +47,13 @@ module Program =
         writer.WriteLine(AppArgument.parser.PrintUsage())
       | TypeSearcherError error ->
         match error with
-        | TypeSearcherModule.QueryParseError () ->
-          writer.WriteLine("Invalid query.")
         | TypeSearcherModule.AssemblyLoadError (path, e) ->
           writer.WriteLine(sprintf "Failed to load an assembly: %s" path)
           writer.WriteLine(sprintf "%A" e)
       | OverrideGeneratorError error ->
         match error with
+        | OverrideGeneratorModule.TypeQueryParseError () ->
+          writer.WriteLine("Invalid query.")
         | OverrideGeneratorModule.TypeSearcherError error ->
           error |> TypeSearcherError |> loop
         | OverrideGeneratorModule.NoMatchingType ->

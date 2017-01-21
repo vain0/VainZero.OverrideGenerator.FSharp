@@ -56,7 +56,7 @@ module OverrideWriterTest =
     let body (typ, expected) =
       test {
         let (writer, get) = seed ()
-        writer.Write(typ, typ.Name, OverrideGeneratorModule.isNotSpecialMethod)
+        writer.Write(typ, [||], OverrideGeneratorModule.isNotSpecialMethod)
         do! get () |> assertEquals expected
       }
     parameterize {
@@ -125,16 +125,16 @@ module OverrideWriterTest =
     }
 
   let ``test Write generic types`` =
-    let body (typ, name, expected) =
+    let body (typ, arguments, expected) =
       test {
         let (writer, get) = seed ()
-        writer.Write(typ, name, OverrideGeneratorModule.isNotSpecialMethod)
+        writer.Write(typ, arguments, OverrideGeneratorModule.isNotSpecialMethod)
         do! get () |> assertEquals expected
       }
     parameterize {
       case
         ( typedefof<IGeneric1<_>>
-        , "IGeneric1<'x>"
+        , [|"'x"|]
         , """interface IGeneric1<'x> with
     override self.X =
         todo ()
@@ -142,7 +142,7 @@ module OverrideWriterTest =
         )
       case
         ( typedefof<IGeneric2<_, _>>
-        , "IGeneric2<'x, 'y>"
+        , [|"'x"; "'y"|]
         , """interface IGeneric2<'x, 'y> with
     override self.F(arg1) =
         todo ()
