@@ -37,7 +37,7 @@ module TypeQueryParser =
       Parser<'x, unit>
 
     let skipSpaceParser: Parser<unit> =
-      skipMany (anyOf [' '; '\t'])
+      skipMany (skipAnyOf [' '; '\t'])
 
     let identifierParser: Parser<string> =
       parse {
@@ -59,10 +59,10 @@ module TypeQueryParser =
             do! skipSpaceParser
             return!
                 between
-                (skipChar '<') (skipChar '>')
+                (skipChar '<' .>> skipSpaceParser) (skipChar '>')
                 (sepBy1
-                  (skipSpaceParser >>. typeExpressionParser)
-                  (skipSpaceParser >>. skipChar ','))
+                  (typeExpressionParser .>> skipSpaceParser)
+                  (skipChar ',' .>> skipSpaceParser))
           }
           |> attempt
           |> opt

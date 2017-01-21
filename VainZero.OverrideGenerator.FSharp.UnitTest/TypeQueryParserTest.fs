@@ -57,5 +57,11 @@ module TypeQueryParserTest =
         , "IDictionary"
         , [|"IDictionary<X, Y>"; "IDictionary<Z, W>"|]
         )
+      case
+        ( " IDictionary < IDictionary < X , Y > , IEnumerable < Z > > "
+        , [||]
+        , "IDictionary"
+        , [|"IDictionary<X, Y>"; "IEnumerable<Z>"|]
+        )
       run body
     }
