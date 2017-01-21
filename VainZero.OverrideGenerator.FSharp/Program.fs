@@ -52,8 +52,9 @@ module Program =
           writer.WriteLine(sprintf "%A" e)
       | OverrideGeneratorError error ->
         match error with
-        | OverrideGeneratorModule.TypeQueryParseError () ->
+        | OverrideGeneratorModule.TypeQueryParseError message ->
           writer.WriteLine("Invalid query.")
+          writer.WriteLine(message)
         | OverrideGeneratorModule.TypeSearcherError error ->
           error |> TypeSearcherError |> loop
         | OverrideGeneratorModule.NoMatchingType ->

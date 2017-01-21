@@ -6,7 +6,7 @@ open Persimmon.Syntax.UseTestNameByReflection
 open VainZero.OverrideGenerator.FSharp
 
 module TypeQueryParserTest =
-  let ``test parse`` =
+  let ``test tryParse success`` =
     let body (input, path, name, arguments) =
       test {
         let actual = input |> TypeQueryParser.tryParse |> Result.get
@@ -22,8 +22,20 @@ module TypeQueryParserTest =
         , [||]
         )
       case
+        ( "System.Collections.IEnumerable"
+        , [|"System"; "Collections"|]
+        , "IEnumerable"
+        , [||]
+        )
+      case
         ( "IEnumerable<T>"
         , [||]
+        , "IEnumerable"
+        , [|"T"|]
+        )
+      case
+        ( "System.Collections.Generic.IEnumerable<T>"
+        , [|"System"; "Collections"; "Generic"|]
         , "IEnumerable"
         , [|"T"|]
         )
@@ -39,13 +51,11 @@ module TypeQueryParserTest =
         , "IDictionary"
         , [|"T"; "U"|]
         )
-      (*
       case
         ( "IDictionary<IDictionary<X, Y>, IDictionary<Z, W>>"
         , [||]
         , "IDictionary"
         , [|"IDictionary<X, Y>"; "IDictionary<Z, W>"|]
         )
-      //*)
       run body
     }

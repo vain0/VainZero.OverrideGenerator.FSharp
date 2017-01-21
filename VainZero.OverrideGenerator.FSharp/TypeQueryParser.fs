@@ -3,10 +3,34 @@
 open System
 open System.Text.RegularExpressions
 open Basis.Core
+open FParsec
+
+type TypeExpression =
+  {
+    Qualifier:
+      array<string>
+    Name:
+      string
+    Arguments:
+      array<TypeExpression>
+  }
+with
+  override this.ToString() =
+    let fullName =
+      (this.Qualifier |> Array.map (fun q -> q + ".") |> String.concat "")
+      + this.Name
+    match this.Arguments with
+    | [||] ->
+      fullName
+    | arguments ->
+      sprintf "%s<%s>"
+        fullName
+        (arguments |> Array.map string |> String.concat ", ")
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module TypeQueryParser =
-  type Error = unit
+  type Error =
+    string
 
   type Result =
     {
@@ -20,27 +44,80 @@ module TypeQueryParser =
         array<string>
     }
 
+  module private Parsers =
+    type Parser<'x> =
+      Parser<'x, unit>
+
+    let skipSpaceParser: Parser<unit> =
+      skipMany (anyOf [' '; '\t'])
+
+    let identifierParser: Parser<_> =
+      parse {
+        let! headChar = pchar '_' <|> asciiLetter
+        let! tailChars = manyChars (pchar '_' <|> asciiLetter <|> digit)
+        return string headChar + tailChars
+      }
+
+    let (typeExpressionParser: Parser<TypeExpression>, typeExpressionParserRef) =
+      createParserForwardedToRef ()
+
+    typeExpressionParserRef :=
+      parse {
+        let! names = sepBy1 identifierParser (skipChar '.')
+        let name = names |> List.last
+        let qualifier = names |> List.take (List.length names - 1)
+        let! arguments =
+          parse {
+            do! skipSpaceParser
+            return!
+                between
+                (skipChar '<') (skipChar '>')
+                (sepBy1
+                  (skipSpaceParser >>. typeExpressionParser)
+                  (skipSpaceParser >>. skipChar ','))
+          }
+          |> attempt
+          |> opt
+        return
+          {
+            Qualifier =
+              qualifier |> List.toArray
+            Name =
+              name
+            Arguments =
+              arguments
+              |> Option.getOr []
+              |> List.toArray
+          }
+      }
+
+    let queryParser: Parser<_> =
+      parse {
+        do! skipSpaceParser
+        let! expression =
+          typeExpressionParser
+        do! skipSpaceParser
+        do! eof
+        return expression
+      }
+
   let tryParse (query: string): Result<_, Error> =
     result {
-      let (name, typeParameters) =
-        // TODO: improve
-        if query.Contains("<") && query.EndsWith(">") then
-          let (name, rest) =
-            query |> Str.take (query.Length - 1) |> Str.split2 "<"
-          let typeParameters =
-            rest |> Str.splitBy "," |> Array.map Str.trim
-          (name, typeParameters)
-        else
-          (query, [||])
+      let! expression =
+        match runParserOnString Parsers.queryParser () "Query" query with
+        | Success (expression, (), _) ->
+          Basis.Core.Success expression
+        | Failure (message, _, ()) ->
+          Basis.Core.Failure message
       return
         {
           Query =
             query
           Path =
-            [||]
+            expression.Qualifier
           Name =
-            name
+            expression.Name
           TypeParameters =
-            typeParameters
+            expression.Arguments |> Array.map string
         }
     }
