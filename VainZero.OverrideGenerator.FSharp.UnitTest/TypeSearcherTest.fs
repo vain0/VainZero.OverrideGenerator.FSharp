@@ -10,16 +10,13 @@ open VainZero.IO
 open VainZero.OverrideGenerator.FSharp
 
 module TypeSearcherTest =
-  let ``test FindOrError matching cases`` =
+  let ``test find`` =
     let body (query, expected) =
       test {
-        use searcher = new TypeSearcher()
+        let assemblies = AppDomain.CurrentDomain.GetAssemblies()
         let query = query |> TypeExpressionParser.tryParse |> Result.get
-        match searcher.FindOrError(query) with
-        | Success actual ->
-          do! actual |> Seq.toArray |> assertEquals expected
-        | Failure error ->
-          do! fail (sprintf "Error: %O" error)
+        let actual = TypeSearcherModule.find assemblies query
+        do! actual |> Seq.toArray |> assertEquals expected
       }
     parameterize {
       case
@@ -27,7 +24,7 @@ module TypeSearcherTest =
         , [| typeof<System.IDisposable> |]
         )
       case
-        ( "IEnumerable<T>"
+        ( "IEnumerable<'x>"
         , [| typedefof<System.Collections.Generic.IEnumerable<_>> |]
         )
       case
@@ -37,6 +34,10 @@ module TypeSearcherTest =
       case
         ( "Collections.IEnumerable"
         , [| typeof<System.Collections.IEnumerable> |]
+        )
+      case
+        ( "List<_>.Enumerator<_>" // TODO: It should match "List<_>.Enumerator".
+        , [| typedefof<System.Collections.Generic.List<_>.Enumerator> |]
         )
       run body
     }

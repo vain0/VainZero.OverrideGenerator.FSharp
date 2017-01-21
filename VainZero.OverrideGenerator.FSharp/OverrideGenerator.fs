@@ -60,12 +60,11 @@ type OverrideGenerator(searcher: TypeSearcher) =
       let! query =
         query |> TypeExpressionParser.tryParse
         |> Result.mapFailure TypeQueryParseError
-      let! types =
-        searcher.FindOrError(query)
-        |> Result.mapFailure TypeSearcherError
+      let types =
+        searcher.Find(query)
       match types |> Seq.tryHead with
       | Some typ ->
-        let arguments = query.Arguments |> Array.map string
+        let arguments = (query |> snd).Arguments |> Array.map string
         return writer.WriteAsync(typ, arguments, writes overridesDefault)
       | None ->
         return! Failure NoMatchingType

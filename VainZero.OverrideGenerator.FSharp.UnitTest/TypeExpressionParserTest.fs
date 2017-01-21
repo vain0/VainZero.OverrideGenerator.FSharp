@@ -5,12 +5,12 @@ open Persimmon
 open Persimmon.Syntax.UseTestNameByReflection
 open VainZero.OverrideGenerator.FSharp
 
-module TypeQueryParserTest =
+module TypeExpressionParserTest =
   let ``test tryParse success`` =
     let body (input, qualifier, name, arguments) =
       test {
-        let actual = input |> TypeExpressionParser.tryParse |> Result.get
-        do! actual.Qualifier |> assertEquals qualifier
+        let (suffix, actual) = input |> TypeExpressionParser.tryParse |> Result.get
+        do! suffix |> assertEquals qualifier
         do! actual.Name |> assertEquals name
         do! actual.Arguments |> Array.map string |> assertEquals arguments
       }
@@ -24,6 +24,7 @@ module TypeQueryParserTest =
       case
         ( "System.Collections.IEnumerable"
         , [|"System"; "Collections"|]
+          |> Array.map (fun n -> { Name = n; Arguments = [||] })
         , "IEnumerable"
         , [||]
         )
@@ -34,8 +35,15 @@ module TypeQueryParserTest =
         , [|"T"|]
         )
       case
+        ( "IEnumerable<'x>"
+        , [||]
+        , "IEnumerable"
+        , [|"'x"|]
+        )
+      case
         ( "System.Collections.Generic.IEnumerable<T>"
         , [|"System"; "Collections"; "Generic"|]
+          |> Array.map (fun n -> { Name = n; Arguments = [||] })
         , "IEnumerable"
         , [|"T"|]
         )

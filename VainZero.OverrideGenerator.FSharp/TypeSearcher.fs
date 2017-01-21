@@ -11,17 +11,35 @@ module TypeSearcherModule =
     | AssemblyLoadError
       of string * exn
 
-  let matches (typeExpression: TypeExpression) (typ: Type) =
-    let name = typ |> Type.rawName
+  let matches ((suffix, pattern): QualifiedTypeExpression) (typ: Type) =
     if
-      name = typeExpression.Name
-      && typ.GetGenericArguments().Length = typeExpression.Arguments.Length
+      (typ |> Type.rawName) = pattern.Name
+      && typ.GetGenericArguments().Length = pattern.Arguments.Length
     then
-      let (namespaces, classes) = Type.qualifier typ
-      let path = Array.append namespaces classes
-      path |> Array.endsWith typeExpression.Qualifier
+      let (namespaces, classes) =
+        Type.qualifier typ
+      let qualifier =
+        Array.append namespaces classes
+      if suffix.Length <= qualifier.Length then
+        seq {
+          for i in 1..suffix.Length do
+            let actual = qualifier.[qualifier.Length - i]
+            let expected = suffix.[suffix.Length - i]
+            let expectedName =
+              if expected.Arguments.Length = 0
+              then expected.Name
+              else sprintf "%s`%d" expected.Name expected.Arguments.Length
+            yield actual = expectedName
+        } |> Seq.forall id
+      else
+        false
     else
       false
+
+  let find (assemblies: seq<Assembly>) query =
+    assemblies
+    |> Seq.collect (fun a -> a.GetTypes())
+    |> Seq.filter (matches query)
 
 open TypeSearcherModule
 
@@ -66,13 +84,8 @@ type TypeSearcher() =
           error |> Failure
       ) (Success ())
 
-  let tryFind (query: TypeExpression): Result<_, Error> =
-    result {
-      return
-        assemblies ()
-        |> Seq.collect (fun a -> a.GetTypes())
-        |> Seq.filter (matches query)
-    }
+  let find query =
+    find (assemblies ()) query
 
   let dispose () =
     AppDomain.Unload(appDomain)
@@ -83,8 +96,8 @@ type TypeSearcher() =
   member this.LoadOrError(paths) =
     tryLoadMany paths
 
-  member this.FindOrError(query) =
-    tryFind query
+  member this.Find(query) =
+    find query
 
   member this.Dispose() =
     dispose ()

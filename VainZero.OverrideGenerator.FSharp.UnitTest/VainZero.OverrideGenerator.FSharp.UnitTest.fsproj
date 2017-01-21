@@ -46,7 +46,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="CollectionsTest.fs" />
     <Compile Include="ReflectionTest.fs" />
-    <Compile Include="TypeQueryParserTest.fs" />
+    <Compile Include="TypeExpressionParserTest.fs" />
     <Compile Include="TypeSearcherTest.fs" />
     <Compile Include="OverrideWriterTest.fs" />
     <Compile Include="OverrideGeneratorTest.fs" />

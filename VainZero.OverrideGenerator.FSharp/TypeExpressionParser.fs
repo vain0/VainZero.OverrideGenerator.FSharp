@@ -4,11 +4,28 @@ open System
 open System.Text.RegularExpressions
 open Basis.Core
 open FParsec
+open VainZero.Collections
 
 type TypeExpression =
+  | VariableTypeExpression
+    of string
+  | AppliedTypeExpression
+    of AppliedTypeExpression
+  | QualifiedTypeExpression
+    of QualifiedTypeExpression
+with
+  override this.ToString() =
+    match this with
+    | VariableTypeExpression name ->
+      "'" + name
+    | AppliedTypeExpression applied ->
+      applied |> string
+    | QualifiedTypeExpression (qualifier, last) ->
+      (qualifier |> Array.map (fun q -> string q + ".") |> String.concat "")
+      + string last
+
+and AppliedTypeExpression =
   {
-    Qualifier:
-      array<string>
     Name:
       string
     Arguments:
@@ -16,16 +33,16 @@ type TypeExpression =
   }
 with
   override this.ToString() =
-    let fullName =
-      (this.Qualifier |> Array.map (fun q -> q + ".") |> String.concat "")
-      + this.Name
     match this.Arguments with
     | [||] ->
-      fullName
+      this.Name
     | arguments ->
       sprintf "%s<%s>"
-        fullName
+        this.Name
         (arguments |> Array.map string |> String.concat ", ")
+
+and QualifiedTypeExpression =
+  array<AppliedTypeExpression> * AppliedTypeExpression
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module TypeExpressionParser =
@@ -49,11 +66,15 @@ module TypeExpressionParser =
     let (typeExpressionParser: Parser<TypeExpression>, typeExpressionParserRef) =
       createParserForwardedToRef ()
 
-    typeExpressionParserRef :=
+    let variableTypeExpressionParser =
       parse {
-        let! names = sepBy1 identifierParser (skipChar '.')
-        let name = names |> List.last
-        let qualifier = names |> List.take (List.length names - 1)
+        do! skipChar '\''
+        return! identifierParser
+      }
+
+    let appliedTypeExpressionParser =
+      parse {
+        let! name = identifierParser
         let! arguments =
           parse {
             do! skipSpaceParser
@@ -68,8 +89,6 @@ module TypeExpressionParser =
           |> opt
         return
           {
-            Qualifier =
-              qualifier |> List.toArray
             Name =
               name
             Arguments =
@@ -79,17 +98,33 @@ module TypeExpressionParser =
           }
       }
 
+    let qualifiedTypeExpressionParser =
+      sepBy1 appliedTypeExpressionParser (skipChar '.')
+      |>>
+        (fun expressions ->
+          expressions
+          |> List.toArray
+          |> Array.tryDecomposeLast
+          |> Option.get
+        )
+
+    typeExpressionParserRef :=
+      attempt
+        (variableTypeExpressionParser |>> VariableTypeExpression)
+      <|>
+        (qualifiedTypeExpressionParser |>> QualifiedTypeExpression)
+
     let queryParser: Parser<_> =
       parse {
         do! skipSpaceParser
         let! expression =
-          typeExpressionParser
+          qualifiedTypeExpressionParser
         do! skipSpaceParser
         do! eof
         return expression
       }
 
-  let tryParse (query: string): Result<TypeExpression, Error> =
+  let tryParse (query: string): Result<QualifiedTypeExpression, Error> =
     match runParserOnString Parsers.queryParser () "Query" query with
     | Success (expression, (), _) ->
       Basis.Core.Success expression
