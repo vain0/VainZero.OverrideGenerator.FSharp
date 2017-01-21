@@ -12,7 +12,7 @@ module TypeQueryParserTest =
         let actual = input |> TypeQueryParser.tryParse |> Result.get
         do! actual.Path |> assertEquals path
         do! actual.Name |> assertEquals name
-        do! actual.TypeArguments |> assertEquals arguments
+        do! actual.TypeParameters |> assertEquals arguments
       }
     parameterize {
       case

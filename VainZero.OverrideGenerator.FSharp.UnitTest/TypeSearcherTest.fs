@@ -29,5 +29,9 @@ module TypeSearcherTest =
         ( "IEnumerable<T>"
         , [| typedefof<System.Collections.Generic.IEnumerable<_>> |]
         )
+      case
+        ( "IDictionary<T, U>"
+        , [| typedefof<System.Collections.Generic.IDictionary<_, _>> |]
+        )
       run body
     }

@@ -13,8 +13,14 @@ module TypeSearcherModule =
 
   let matches (result: TypeQueryParser.Result) (typ: Type) =
     let name = typ.Name |> Str.takeWhile ((<>) '`')
-    name = result.Name
-    && typ.GenericTypeArguments.Length = result.TypeArguments.Length
+    if name = result.Name then
+      let typeParameterCount =
+        if typ.IsGenericTypeDefinition
+        then typ.GetGenericArguments().Length
+        else 0
+      typeParameterCount = result.TypeParameters.Length
+    else
+      false
 
 open TypeSearcherModule
 

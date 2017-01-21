@@ -16,20 +16,20 @@ module TypeQueryParser =
         array<string>
       Name:
         string
-      TypeArguments:
+      TypeParameters:
         array<string>
     }
 
   let tryParse (input: string): Result<_, Error> =
     result {
-      let (name, typeArguments) =
+      let (name, typeParameters) =
         // TODO: improve
         if input.Contains("<") && input.EndsWith(">") then
           let (name, rest) =
             input |> Str.take (input.Length - 1) |> Str.split2 "<"
-          let typeArguments =
+          let typeParameters =
             rest |> Str.splitBy "," |> Array.map Str.trim
-          (name, typeArguments)
+          (name, typeParameters)
         else
           (input, [||])
       return
@@ -40,7 +40,7 @@ module TypeQueryParser =
             [||]
           Name =
             name
-          TypeArguments =
-            typeArguments
+          TypeParameters =
+            typeParameters
         }
     }
