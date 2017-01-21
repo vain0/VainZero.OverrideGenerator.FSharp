@@ -917,4 +917,8 @@
       </ItemGroup>
     </When>
   </Choose>
+  <PropertyGroup>
+    <PostBuildEvent>$(SolutionDir)\packages\unittest\Persimmon.Console\tools\Persimmon.Console.exe $(TargetPath)
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

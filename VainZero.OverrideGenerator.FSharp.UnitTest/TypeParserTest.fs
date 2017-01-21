@@ -2,6 +2,7 @@
 
 open Persimmon
 open Persimmon.Syntax.UseTestNameByReflection
+open VainZero.OverrideGenerator.FSharp
 
 module TypeParserTest =
   let ``test parse`` =
@@ -37,11 +38,13 @@ module TypeParserTest =
         , "IDictionary"
         , [|"T"; "U"|]
         )
+      (*
       case
         ( "IDictionary<IDictionary<X, Y>, IDictionary<Z, W>>"
         , [||]
         , "IDictionary"
         , [|"IDictionary<X, Y>"; "IDictionary<Z, W>"|]
         )
+      //*)
       run body
     }
