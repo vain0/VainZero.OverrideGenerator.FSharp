@@ -39,8 +39,7 @@ module OverrideWriterTest =
     abstract X: 'x
 
   type IGeneric2<'x, 'y> =
-    abstract X: 'x
-    abstract Y: 'y
+    abstract F: 'x -> 'y
 
   let receiver = "self"
   let stub = "todo ()"
@@ -119,6 +118,33 @@ module OverrideWriterTest =
         todo ()
 
     override self.X =
+        todo ()
+"""
+        )
+      run body
+    }
+
+  let ``test Write generic types`` =
+    let body (typ, name, expected) =
+      test {
+        let (writer, get) = seed ()
+        writer.Write(typ, name, OverrideGeneratorModule.isNotSpecialMethod)
+        do! get () |> assertEquals expected
+      }
+    parameterize {
+      case
+        ( typedefof<IGeneric1<_>>
+        , "IGeneric1<'x>"
+        , """interface IGeneric1<'x> with
+    override self.X =
+        todo ()
+"""
+        )
+      case
+        ( typedefof<IGeneric2<_, _>>
+        , "IGeneric2<'x, 'y>"
+        , """interface IGeneric2<'x, 'y> with
+    override self.F(arg1) =
         todo ()
 """
         )
