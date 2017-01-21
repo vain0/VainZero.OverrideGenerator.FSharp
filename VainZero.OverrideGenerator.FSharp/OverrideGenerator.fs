@@ -14,6 +14,19 @@ module OverrideGeneratorModule =
       of TypeSearcherModule.Error
     | NoMatchingType
 
+  let canOverride (memberInfo: MemberInfo) =
+    let canOverride (methodInfo: MethodInfo) =
+      methodInfo |> isNull |> not
+      && (methodInfo.IsAbstract || methodInfo.IsVirtual)
+    match memberInfo.MemberType with
+    | MemberTypes.Method ->
+      (memberInfo :?> MethodInfo) |> canOverride
+    | MemberTypes.Property ->
+      let propertyInfo = memberInfo :?> PropertyInfo
+      propertyInfo.GetMethod |> canOverride || propertyInfo.SetMethod |> canOverride
+    | _ ->
+      false
+
   let isAbstract (memberInfo: MemberInfo) =
     match memberInfo.MemberType with
     | MemberTypes.Method ->
@@ -38,10 +51,11 @@ module OverrideGeneratorModule =
 open OverrideGeneratorModule
 
 type OverrideGenerator(searcher: TypeSearcher) =
-  let writes memberInfo =
-    isAbstract memberInfo && isNotSpecialMethod memberInfo
+  let writes overridesDefault memberInfo =
+    isNotSpecialMethod memberInfo
+    && (if overridesDefault then canOverride else isAbstract) memberInfo
 
-  let tryGenerate (writer: OverrideWriter) query =
+  let tryGenerate (writer: OverrideWriter) overridesDefault query =
     result {
       let! query =
         query |> TypeExpressionParser.tryParse
@@ -52,10 +66,10 @@ type OverrideGenerator(searcher: TypeSearcher) =
       match types |> Seq.tryHead with
       | Some typ ->
         let arguments = query.Arguments |> Array.map string
-        return writer.WriteAsync(typ, arguments, writes)
+        return writer.WriteAsync(typ, arguments, writes overridesDefault)
       | None ->
         return! Failure NoMatchingType
     }
 
-  member this.GenerateOrError(writer, typeName) =
-    tryGenerate writer typeName
+  member this.GenerateOrError(writer, overridesDefault, query) =
+    tryGenerate writer overridesDefault query

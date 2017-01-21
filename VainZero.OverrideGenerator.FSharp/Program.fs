@@ -34,7 +34,7 @@ module Program =
       let overrideWriter =
         OverrideWriter(structuralWriter, argument.ReceiverIdentifier, argument.Stub)
       let! write =
-        generator.GenerateOrError(overrideWriter, argument.Type)
+        generator.GenerateOrError(overrideWriter, argument.OverridesDefault, argument.Type)
         |> Result.mapFailure OverrideGeneratorError
       do write |> Async.RunSynchronously
       return ()

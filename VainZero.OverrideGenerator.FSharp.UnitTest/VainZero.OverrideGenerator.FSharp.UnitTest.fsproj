@@ -49,6 +49,7 @@
     <Compile Include="TypeQueryParserTest.fs" />
     <Compile Include="TypeSearcherTest.fs" />
     <Compile Include="OverrideWriterTest.fs" />
+    <Compile Include="OverrideGeneratorTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VainZero.OverrideGenerator.FSharp\VainZero.OverrideGenerator.FSharp.fsproj">

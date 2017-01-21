@@ -11,6 +11,8 @@ type AppParameter =
   | [<AltCommandLine("-r")>]
     Reference
     of string
+  | [<AltCommandLine("-OD")>]
+    OverridesDefault
   | ReceiverIdentifier
     of string
   | IndentWidth
@@ -25,6 +27,8 @@ with
         "Specify the base type to inherit from. Can include type arguments (e.g. IEnumerable<T>)."
       | Reference _ ->
         "Add a reference to an assembly."
+      | OverridesDefault ->
+        "Override all overridable members. false by default."
       | ReceiverIdentifier _ ->
         "Specify the identifier to bind the receiver. `this` by default."
       | IndentWidth _ ->
@@ -38,6 +42,8 @@ type AppArgument =
       string
     References:
       list<string>
+    OverridesDefault:
+      bool
     ReceiverIdentifier:
       string
     IndentWidth:
@@ -59,6 +65,8 @@ module AppArgument =
           result.GetResult(<@ Type @>)
         References =
           result.GetResults(<@ Reference @>)
+        OverridesDefault =
+          result.Contains(<@ OverridesDefault @>)
         ReceiverIdentifier =
           result.GetResult(<@ ReceiverIdentifier @>, "this")
         IndentWidth =
