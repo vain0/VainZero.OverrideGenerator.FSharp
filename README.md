@@ -6,13 +6,13 @@ Generates `override` stubs in F# syntax.
 ## Usage
 ### Basic
 ```
-VainZero.OverrideGenerator.FSharp.exe -t type-name-to-inherit-from
+fsoverride -t type-name-to-inherit-from
 ```
 
 For example, try:
 
 ```
-VainZero.OverrideGenerator.FSharp.exe -t IEnumerable
+fsoverride -t IEnumerable
 ```
 
 and get:
@@ -39,7 +39,7 @@ interface IEnumerable<int> with
 To generate stubs for the type defined in an assembly, specify ``-r`` parameter. For example, try:
 
 ```
-VainZero.OverrideGenerator.FSharp.exe -r Argu.dll -t IArgParserTemplate
+fsoverride -r Argu.dll -t IArgParserTemplate
 ```
 
 and get:
@@ -54,7 +54,7 @@ where `IArgParserTemplate` is a type defined in `Argu.dll`.
 
 ### Help command
 ```
-VainZero.OverrideGenerator.FSharp.exe --help
+fsoverride --help
 ```
 
 ## License

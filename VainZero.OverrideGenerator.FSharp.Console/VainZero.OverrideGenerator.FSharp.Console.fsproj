@@ -8,7 +8,7 @@
     <ProjectGuid>e7f7f32a-58ab-4be5-90ff-702bb96a502c</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>VainZero.OverrideGenerator.FSharp.Console</RootNamespace>
-    <AssemblyName>VainZero.OverrideGenerator.FSharp.Console</AssemblyName>
+    <AssemblyName>fsoverride</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
