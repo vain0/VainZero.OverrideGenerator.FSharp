@@ -84,24 +84,32 @@ type OverrideWriter(writer: StructuralTextWriter, receiver, stub) =
         do! writeMember mem
     }
 
+  let writeInterface writes (typ: Type) typeName =
+    async {
+      match typ.GetMembers() |> Array.filter writes with
+      | [||] ->
+        do! writer.WriteLineAsync(sprintf "interface %s" typeName)
+      | members ->
+        do! writer.WriteLineAsync(sprintf "interface %s with" typeName)
+        use indenting = writer.AddIndent()
+        return! writeMembers members
+    }
+
+  let writeClass writes (typ: Type) typeName =
+    async {
+      match typ.GetMembers() |> Array.filter writes with
+      | [||] ->
+        ()
+      | members ->
+        return! writeMembers members
+    }
+
   let write (typ: Type) (typeName: string) (writes: MemberInfo -> bool) =
     async {
-      let members =
-        typ.GetMembers() |> Array.filter writes
       if typ.IsInterface then
-        match members with
-        | [||] ->
-          do! writer.WriteLineAsync(sprintf "interface %s" typeName)
-        | members ->
-          do! writer.WriteLineAsync(sprintf "interface %s with" typeName)
-          use indenting = writer.AddIndent()
-          return! writeMembers members
+        return! writeInterface writes typ typeName
       else
-        match members with
-        | [||] ->
-          ()
-        | members ->
-          return! writeMembers members
+        return! writeClass writes typ typeName
     }
 
   member this.WriteAsync(typ, typeName, writes) =
