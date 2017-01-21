@@ -1,6 +1,8 @@
 # OverrideGenerator for F#
 Generates `override` stubs in F# syntax.
 
+[Download the latest binary.](https://github.com/vain0/VainZero.OverrideGenerator.FSharp/releases/latest)
+
 ## Usage
 ### Basic
 ```
