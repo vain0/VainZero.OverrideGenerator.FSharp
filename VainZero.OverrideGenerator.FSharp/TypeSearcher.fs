@@ -10,10 +10,10 @@ module TypeSearcherModule =
     | AssemblyLoadError
       of string * exn
 
-  let matches (result: TypeQueryParser.Result) (typ: Type) =
+  let matches (typeExpression: TypeExpression) (typ: Type) =
     let name = typ |> Type.rawName
-    if name = result.Name then
-      typ.GetGenericArguments().Length = result.TypeParameters.Length
+    if name = typeExpression.Name then
+      typ.GetGenericArguments().Length = typeExpression.Arguments.Length
     else
       false
 
@@ -60,7 +60,7 @@ type TypeSearcher() =
           error |> Failure
       ) (Success ())
 
-  let tryFind (query: TypeQueryParser.Result): Result<_, Error> =
+  let tryFind (query: TypeExpression): Result<_, Error> =
     result {
       return
         assemblies ()

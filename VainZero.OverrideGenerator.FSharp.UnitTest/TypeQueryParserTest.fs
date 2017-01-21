@@ -7,12 +7,12 @@ open VainZero.OverrideGenerator.FSharp
 
 module TypeQueryParserTest =
   let ``test tryParse success`` =
-    let body (input, path, name, arguments) =
+    let body (input, qualifier, name, arguments) =
       test {
         let actual = input |> TypeQueryParser.tryParse |> Result.get
-        do! actual.Path |> assertEquals path
+        do! actual.Qualifier |> assertEquals qualifier
         do! actual.Name |> assertEquals name
-        do! actual.TypeParameters |> assertEquals arguments
+        do! actual.Arguments |> Array.map string |> assertEquals arguments
       }
     parameterize {
       case

@@ -51,7 +51,8 @@ type OverrideGenerator(searcher: TypeSearcher) =
         |> Result.mapFailure TypeSearcherError
       match types |> Seq.tryHead with
       | Some typ ->
-        return writer.WriteAsync(typ, query.TypeParameters, writes)
+        let arguments = query.Arguments |> Array.map string
+        return writer.WriteAsync(typ, arguments, writes)
       | None ->
         return! Failure NoMatchingType
     }
