@@ -1,0 +1,8 @@
+Basis.Core
+FParsec
+
+group Console
+    Argu
+
+group UnitTest
+    Persimmon
