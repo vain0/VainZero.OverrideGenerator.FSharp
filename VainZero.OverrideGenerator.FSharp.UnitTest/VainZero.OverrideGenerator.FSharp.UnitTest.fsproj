@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="ReflectionTest.fs" />
     <Compile Include="TypeQueryParserTest.fs" />
     <Compile Include="TypeSearcherTest.fs" />
     <Compile Include="OverrideWriterTest.fs" />
