@@ -3,9 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VainZero.OverrideGenerator.FSharp", "VainZero.OverrideGenerator.FSharp\VainZero.OverrideGenerator.FSharp.fsproj", "{3FEDFC2C-5E24-48F9-823A-8898FADE0E41}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VainZero.OverrideGenerator.FSharp.Utility", "VainZero.OverrideGenerator.FSharp.Utility\VainZero.OverrideGenerator.FSharp.Utility.fsproj", "{A3906DFF-A0D5-44CB-B4FF-1FA5F28EB450}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VainZero.OverrideGenerator.FSharp.UnitTest", "VainZero.OverrideGenerator.FSharp.UnitTest\VainZero.OverrideGenerator.FSharp.UnitTest.fsproj", "{F678B979-50DC-4474-8A96-A64788B3DEE4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "100-Libraries", "100-Libraries", "{2A714F6F-9D77-47B8-9D77-752AF70675E4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "200-Core", "200-Core", "{248F97CB-56B2-4B9B-9CFE-257FFC5DA1DB}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VainZero.OverrideGenerator.FSharp.Core", "VainZero.OverrideGenerator.FSharp.Core\VainZero.OverrideGenerator.FSharp.Core.fsproj", "{04A6690B-8562-426D-9976-4703284AA535}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "300-Console", "300-Console", "{199B1BD6-9379-4909-BCD8-B4ED4D922A2F}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VainZero.OverrideGenerator.FSharp.Console", "VainZero.OverrideGenerator.FSharp.Console\VainZero.OverrideGenerator.FSharp.Console.fsproj", "{E7F7F32A-58AB-4BE5-90FF-702BB96A502C}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VainZero.OverrideGenerator.FSharp.Utility.UnitTest", "VainZero.OverrideGenerator.FSharp.Utility.UnitTest\VainZero.OverrideGenerator.FSharp.Utility.UnitTest.fsproj", "{FEAA8D3B-7539-4A5D-B74B-80393AA6D0E5}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "VainZero.OverrideGenerator.FSharp.Core.UnitTest", "VainZero.OverrideGenerator.FSharp.Core.UnitTest\VainZero.OverrideGenerator.FSharp.Core.UnitTest.fsproj", "{171823FC-9833-4ACE-8B65-964A8BD4EB34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,16 +25,35 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3FEDFC2C-5E24-48F9-823A-8898FADE0E41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3FEDFC2C-5E24-48F9-823A-8898FADE0E41}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3FEDFC2C-5E24-48F9-823A-8898FADE0E41}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3FEDFC2C-5E24-48F9-823A-8898FADE0E41}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F678B979-50DC-4474-8A96-A64788B3DEE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F678B979-50DC-4474-8A96-A64788B3DEE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F678B979-50DC-4474-8A96-A64788B3DEE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F678B979-50DC-4474-8A96-A64788B3DEE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3906DFF-A0D5-44CB-B4FF-1FA5F28EB450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3906DFF-A0D5-44CB-B4FF-1FA5F28EB450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3906DFF-A0D5-44CB-B4FF-1FA5F28EB450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3906DFF-A0D5-44CB-B4FF-1FA5F28EB450}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04A6690B-8562-426D-9976-4703284AA535}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04A6690B-8562-426D-9976-4703284AA535}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04A6690B-8562-426D-9976-4703284AA535}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04A6690B-8562-426D-9976-4703284AA535}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7F7F32A-58AB-4BE5-90FF-702BB96A502C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7F7F32A-58AB-4BE5-90FF-702BB96A502C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7F7F32A-58AB-4BE5-90FF-702BB96A502C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7F7F32A-58AB-4BE5-90FF-702BB96A502C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEAA8D3B-7539-4A5D-B74B-80393AA6D0E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEAA8D3B-7539-4A5D-B74B-80393AA6D0E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEAA8D3B-7539-4A5D-B74B-80393AA6D0E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEAA8D3B-7539-4A5D-B74B-80393AA6D0E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{171823FC-9833-4ACE-8B65-964A8BD4EB34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{171823FC-9833-4ACE-8B65-964A8BD4EB34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{171823FC-9833-4ACE-8B65-964A8BD4EB34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{171823FC-9833-4ACE-8B65-964A8BD4EB34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A3906DFF-A0D5-44CB-B4FF-1FA5F28EB450} = {2A714F6F-9D77-47B8-9D77-752AF70675E4}
+		{04A6690B-8562-426D-9976-4703284AA535} = {248F97CB-56B2-4B9B-9CFE-257FFC5DA1DB}
+		{E7F7F32A-58AB-4BE5-90FF-702BB96A502C} = {199B1BD6-9379-4909-BCD8-B4ED4D922A2F}
+		{FEAA8D3B-7539-4A5D-B74B-80393AA6D0E5} = {2A714F6F-9D77-47B8-9D77-752AF70675E4}
+		{171823FC-9833-4ACE-8B65-964A8BD4EB34} = {248F97CB-56B2-4B9B-9CFE-257FFC5DA1DB}
 	EndGlobalSection
 EndGlobal
