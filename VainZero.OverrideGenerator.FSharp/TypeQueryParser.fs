@@ -10,7 +10,7 @@ module TypeQueryParser =
 
   type Result =
     {
-      Input:
+      Query:
         string
       Path:
         array<string>
@@ -20,22 +20,22 @@ module TypeQueryParser =
         array<string>
     }
 
-  let tryParse (input: string): Result<_, Error> =
+  let tryParse (query: string): Result<_, Error> =
     result {
       let (name, typeParameters) =
         // TODO: improve
-        if input.Contains("<") && input.EndsWith(">") then
+        if query.Contains("<") && query.EndsWith(">") then
           let (name, rest) =
-            input |> Str.take (input.Length - 1) |> Str.split2 "<"
+            query |> Str.take (query.Length - 1) |> Str.split2 "<"
           let typeParameters =
             rest |> Str.splitBy "," |> Array.map Str.trim
           (name, typeParameters)
         else
-          (input, [||])
+          (query, [||])
       return
         {
-          Input =
-            input
+          Query =
+            query
           Path =
             [||]
           Name =
