@@ -1,4 +1,4 @@
-# OverrideGenerator for F#
+# OverrideGenerator for `F#`
 Generates `override` stubs in F# syntax.
 
 [Download the latest binary.](https://github.com/vain0/VainZero.OverrideGenerator.FSharp/releases/latest)
@@ -13,11 +13,11 @@ For example, try:
 
 ```
 VainZero.OverrideGenerator.FSharp.exe -t IEnumerable
-``
+```
 
 and get:
 
-```
+```fsharp
 interface IEnumerable with
   override this.GetEnumerator() =
     System.NotImplementedException() |> raise
@@ -25,7 +25,7 @@ interface IEnumerable with
 
 The type name can contain namespace path and type arguments. Namespace path matches the suffix of full namaspace path. For example, ``-t "Generic.IEnumerable<int>"`` generates:
 
-```
+```fsharp
 interface IEnumerable with
   override this.GetEnumerator() =
     System.NotImplementedException() |> raise
@@ -44,7 +44,7 @@ VainZero.OverrideGenerator.FSharp.exe -r Argu.dll -t IArgParserTemplate
 
 and get:
 
-```
+```fsharp
 interface IArgParserTemplate with
   override this.Usage =
     System.NotImplementedException() |> raise
