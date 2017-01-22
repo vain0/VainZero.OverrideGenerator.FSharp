@@ -44,16 +44,13 @@ module TypeSearcherModule =
 open TypeSearcherModule
 
 type TypeSearcher() =
-  let appDomain =
-    AppDomain.CreateDomain("VainZero.OverrideGenerator.FSharp.TypeSearcher")
-
   let explicitlyLoadedAssemblies =
     ResizeArray<_>()
 
   let assemblies () =
     seq {
       yield! explicitlyLoadedAssemblies
-      yield! appDomain.GetAssemblies()
+      yield! AppDomain.CurrentDomain.GetAssemblies()
     }
 
   let tryLoad (path: string) =
@@ -66,7 +63,7 @@ type TypeSearcher() =
           AssemblyLoadError (path, e) |> Failure
       let! assembly =
         try
-          appDomain.Load(assemblyName) |> Success
+          Assembly.Load(assemblyName) |> Success
         with
         | e ->
           AssemblyLoadError (path, e) |> Failure
@@ -87,9 +84,6 @@ type TypeSearcher() =
   let find query =
     find (assemblies ()) query
 
-  let dispose () =
-    AppDomain.Unload(appDomain)
-
   member this.LoadOrError(path) =
     tryLoad path
 
@@ -98,10 +92,3 @@ type TypeSearcher() =
 
   member this.Find(query) =
     find query
-
-  member this.Dispose() =
-    dispose ()
-
-  interface IDisposable with
-    override this.Dispose() =
-      this.Dispose()

@@ -24,7 +24,7 @@ module Program =
   let run argv =
     result {
       let! argument = tryArgument argv
-      use searcher = new TypeSearcher()
+      let searcher = TypeSearcher()
       let generator = OverrideGenerator(searcher)
       do!
         searcher.LoadOrError(argument.References)
